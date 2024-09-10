@@ -74,6 +74,23 @@ const PolicyAndKyc = () => {
     hideMessageAfterTimeout();
   };
 
+  const goToApp = () => {
+    const responseData = result ? encodeURIComponent(result) : "";
+
+    // Log the response data for debugging
+    console.log("KYC Response Data:", responseData);
+
+    // Post message to parent first
+    window.postMessage(
+      JSON.stringify({ result: "KYC Upload Successful!" }),
+      "*"
+    );
+
+    // Then navigate back to the app using deep linking
+    window.location.href = `myapp://open?data=${responseData}`;
+
+    console.log("KYC Response sent to app:", responseData);
+  };
   return (
     <div className="kyc-upload-container">
       {/* KYC Form */}
@@ -123,6 +140,8 @@ const PolicyAndKyc = () => {
           Upload PDF
         </button>
       </form>
+
+      <button onClick={goToApp}>Go To App</button>
 
       {/* Result Message */}
       {result && <p className="kyc-result">{result}</p>}
