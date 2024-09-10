@@ -6,6 +6,11 @@ const PolicyAndKyc = () => {
   const imageRef = useRef(null);
   const pdfRef = useRef(null);
   const [result, setResult] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState({
+    adhar: null,
+    image: null,
+    pdf: null,
+  });
 
   // Hide the message after 3 seconds
   const hideMessageAfterTimeout = () => {
@@ -14,26 +19,31 @@ const PolicyAndKyc = () => {
     }, 3000);
   };
 
+  // Handle file selection and display the file names
+  const handleFileSelection = (e) => {
+    const { name, files } = e.target;
+    setSelectedFiles((prevState) => ({
+      ...prevState,
+      [name]: files[0] ? files[0].name : null,
+    }));
+  };
+
+  // Function to upload KYC files
   const uploadFiles = async () => {
     const formData = new FormData();
     const adharFile = adharRef.current.files[0];
     const imageFile = imageRef.current.files[0];
 
     if (!adharFile || !imageFile) {
-      setResult("Please select both files.");
+      setResult("Please select both Aadhaar and image files.");
+      hideMessageAfterTimeout();
       return;
     }
 
     formData.append("adhar", adharFile);
     formData.append("image", imageFile);
 
-    // Log file information to the console for debugging purposes
-    console.log("Aadhaar File:", adharFile);
-    console.log("Image File:", imageFile);
-    console.log("FormData:", formData);
-
     try {
-      // Check if the API URL is accessible from mobile devices
       const response = await fetch("http://148.251.31.66:5000/kycupload", {
         method: "POST",
         body: formData,
@@ -43,17 +53,15 @@ const PolicyAndKyc = () => {
       });
 
       const responseData = await response.json();
-      console.log("Response data:", responseData);
-
       if (response.ok) {
-        setResult(` ${responseData.result}`);
+        setResult(`KYC Upload Successful: ${responseData.result}`);
       } else {
         setResult(`File upload failed: ${responseData.message}`);
       }
     } catch (error) {
-      console.error("Error uploading files:", error);
       setResult(`Error uploading files: ${error.message}`);
     }
+    hideMessageAfterTimeout();
   };
 
   // Function to upload PDF file
@@ -62,7 +70,7 @@ const PolicyAndKyc = () => {
     const formData = new FormData(event.currentTarget);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/upload", {
+      const response = await fetch("http://192.168.x.x:5000/upload", {
         method: "POST",
         body: formData,
       });
@@ -103,6 +111,7 @@ const PolicyAndKyc = () => {
           required
           ref={adharRef}
           className="kyc-input"
+          onChange={handleFileSelection}
         />
 
         <label className="kyc-label">Upload Your Image:</label>
@@ -113,6 +122,7 @@ const PolicyAndKyc = () => {
           required
           ref={imageRef}
           className="kyc-input"
+          onChange={handleFileSelection}
         />
 
         <button type="button" className="kyc-button" onClick={uploadFiles}>
@@ -134,12 +144,21 @@ const PolicyAndKyc = () => {
           required
           ref={pdfRef}
           className="kyc-input"
+          onChange={handleFileSelection}
         />
 
         <button type="submit" className="kyc-button">
           Upload PDF
         </button>
       </form>
+
+      {/* Display selected files */}
+      <div className="file-preview">
+        <h4>Selected Files:</h4>
+        {selectedFiles.adhar && <p>Aadhaar: {selectedFiles.adhar}</p>}
+        {selectedFiles.image && <p>Image: {selectedFiles.image}</p>}
+        {selectedFiles.pdf && <p>PDF: {selectedFiles.pdf}</p>}
+      </div>
 
       <button onClick={goToApp}>Go To App</button>
 
