@@ -44,13 +44,16 @@ const PolicyAndKyc = () => {
     formData.append("image", imageFile);
 
     try {
-      const response = await fetch("http://148.251.31.66:5000/kycupload", {
-        method: "POST",
-        body: formData,
-        headers: {
-          Accept: "application/json",
-        },
-      });
+      const response = await fetch(
+        "https://backend.moneywithmansy.com/kycupload",
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      );
 
       const responseData = await response.json();
       if (response.ok) {
