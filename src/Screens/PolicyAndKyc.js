@@ -45,7 +45,7 @@ const PolicyAndKyc = () => {
 
     try {
       const response = await fetch(
-        "https://backend.moneywithmansy.com/kycupload",
+        "https://kycregister.moneywithmansy.com/kycupload",
         {
           method: "POST",
           body: formData,
