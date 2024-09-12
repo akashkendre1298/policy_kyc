@@ -70,7 +70,7 @@ const PolicyAndKyc = () => {
     const formData = new FormData(event.currentTarget);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/upload", {
+      const response = await fetch("http://148.251.31.66:8000/upload", {
         method: "POST",
         body: formData,
       });
